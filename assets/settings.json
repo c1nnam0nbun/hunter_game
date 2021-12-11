@@ -1,0 +1,144 @@
+{
+	"player": {
+		"material": {
+			"color": {
+				"r": 0.5,
+				"g": 0.1,
+				"b": 0.7
+			},
+			"texture": "Arrow.png"
+		},
+		"transform": {
+			"translation": {
+				"x": -120.0,
+				"y": 0.0,
+				"z": 0.0
+			},
+			"scale": {
+				"x": 0.4,
+				"y": 0.7,
+				"z": 1.0
+			}
+		},
+		"movement_speed": 60.0
+	},
+	"bullet": {
+		"material": {
+			"texture": "Bullet.png"
+		}
+	},
+	"hare": {
+		"material": {
+			"texture": "Arrow.png"
+		},
+		"transform": {
+			"scale": {
+				"x": 0.4,
+				"y": 0.4,
+				"z": 1.0
+			}
+		},
+		"movement_speed": 40.0,
+		"steering": {
+			"wander": {
+				"weight": 1.0,
+				"displace_range": 0.2,
+				"radius": 50.0,
+				"max_force": 0.1,
+				"distance": 300.0
+			},
+			"flee": {
+				"weight": 0.08,
+				"max_flee_time": 3.0
+			},
+			"evade_walls": {
+				"weight": 0.4
+			}
+		},
+		"max_number": 10
+	},
+	"wolf": {
+		"material": {
+			"color": {
+				"r": 0.42,
+				"g": 0.48,
+				"b": 0.54
+			},
+			"texture": "Arrow.png"
+		},
+		"transform": {
+			"scale": {
+				"x": 0.6,
+				"y": 0.6,
+				"z": 1.0
+			}
+		},
+		"movement_speed": 90.0,
+		"steering": {
+			"wander": {
+				"weight": 1.0,
+				"displace_range": 0.2,
+				"radius": 50.0,
+				"max_force": 0.1,
+				"distance": 300.0
+			},
+			"evade_walls": {
+				"weight": 0.8
+			},
+			"pursue": {
+				"weight": 1.0
+			}
+		},
+		"max_number": 3
+	},
+	"deer": {
+		"material": {
+			"color": {
+				"r": 0.0,
+				"g": 0.48,
+				"b": 0.54
+			},
+			"texture": "Arrow.png"
+		},
+		"transform": {
+			"scale": {
+				"x": 0.3,
+				"y": 0.5,
+				"z": 1.0
+			}
+		},
+		"movement_speed": 40.0,
+		"steering": {
+			"wander": {
+				"weight": 1.0,
+				"displace_range": 0.2,
+				"radius": 50.0,
+				"max_force": 0.1,
+				"distance": 300.0
+			},
+			"flee": {
+				"weight": 0.2
+			},
+			"evade": {
+				"weight": 0.3
+			},
+			"evade_walls": {
+				"weight": 1.4
+			},
+			"separation": {
+				"perception_radius": 60.0,
+				"max_force": 0.27
+			},
+			"alignment": {
+				"perception_radius": 100.0,
+				"max_force": 0.4
+			},
+			"cohesion": {
+				"perception_radius": 140.0,
+				"max_force": 0.25
+			}
+		},
+		"max_number": 10,
+		"group_number": 2
+	}
+}

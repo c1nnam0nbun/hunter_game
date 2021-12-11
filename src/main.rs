@@ -126,7 +126,7 @@ fn setup(
         width: 24.0,
         height: 24.0,
         movement_speed: settings["bullet"]["movement_speed"].as_f64().unwrap() as f32,
-        max_duration: settings["deer"]["max_duration"].as_f64().unwrap() as f32
+        max_duration: settings["bullet"]["max_duration"].as_f64().unwrap() as f32
     });
 
     commands

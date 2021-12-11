@@ -58,12 +58,7 @@ impl Plugin for PlayerPlugin {
                 .label("bullet_fly")
                 .after("player_shoot"),
         )
-        .add_system(
-            player_die
-                .system()
-                .label("player_die")
-                .after("player_spawn"),
-        );
+        .add_system(player_die.system().label("player_die"));
     }
 }
 
@@ -186,7 +181,6 @@ fn bullet_fly(
 ) {
     for (mut transform, physics, duration, bullet) in query.iter_mut() {
         let now = time.seconds_since_startup();
-        println!("{}, {}", now, (duration.shot_at + bullet_data.max_duration));
         if now < (duration.shot_at + bullet_data.max_duration).into() {
             transform.translation += physics.velocity;
         } else {

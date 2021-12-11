@@ -25,7 +25,9 @@
 	"bullet": {
 		"material": {
 			"texture": "Bullet.png"
-		}
+		},
+		"movement_speed": 200.0,
+		"max_duration": 2.0
 	},
 	"hare": {
 		"material": {

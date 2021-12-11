@@ -2,16 +2,18 @@ use std::f32::consts::PI;
 
 use bevy::{
     core::Time,
-    math::{Quat, Vec3},
+    math::{Quat, Vec2, Vec3},
     prelude::{
         AppBuilder, Commands, Entity, IntoSystem, ParallelSystemDescriptorCoercion, Plugin, Query,
         Res, ResMut, SpriteBundle, Transform, With,
     },
+    sprite::collide_aabb::collide,
 };
 use rand::Rng;
 
 use crate::{
     components::{Materials, MovementSpeed, Prey, Threat},
+    player::{Bullet, BulletData},
     steering::{flee, pursue, wander, EvadeWallsData, Physics, PursueData, WanderData},
     utils::{dist, limit, line_line_intersection},
     FieldSize, Walls, TIME_STEP,
@@ -68,7 +70,8 @@ impl Plugin for WolfPlugin {
                     .system()
                     .label("wolf_starve")
                     .after("wolf_spawn"),
-            );
+            )
+            .add_system(wolf_die.system().label("wolf_die"));
     }
 }
 
@@ -113,7 +116,7 @@ fn wolf_spawn(
             .insert(WolfBehavior {
                 force: Vec3::ZERO,
                 hunger_time: 0.0,
-                max_hunger_time: 5.0,
+                max_hunger_time: 10.0,
             });
 
         active_wolves.count += 1;
@@ -264,16 +267,40 @@ fn wolf_starve(
 ) {
     if active_wolves.count < settings.max_number {
         return;
-    }    
+    }
 
     for (wolf, mut behavior) in query.iter_mut() {
         let now = time.seconds_since_startup();
 
-    if behavior.hunger_time == 0.0 {
-        behavior.hunger_time = now as f32;
-    }
+        if behavior.hunger_time == 0.0 {
+            behavior.hunger_time = now as f32;
+        }
         if now > (behavior.hunger_time + behavior.max_hunger_time).into() {
             commands.entity(wolf).despawn();
+        }
+    }
+}
+
+fn wolf_die(
+    mut commands: Commands,
+    wolf_query: Query<(&Transform, Entity), With<Wolf>>,
+    bullet_query: Query<(Entity, &Transform), With<Bullet>>,
+    wolf_data: Res<WolfData>,
+    bullet_data: Res<BulletData>,
+) {
+    for (wolf_transform, wolf) in wolf_query.iter() {
+        for (bullet, bullet_transform) in bullet_query.iter() {
+            if collide(
+                wolf_transform.translation,
+                Vec2::new(wolf_data.width, wolf_data.height),
+                bullet_transform.translation,
+                Vec2::new(bullet_data.width, bullet_data.height),
+            )
+            .is_some()
+            {
+                commands.entity(wolf).despawn();
+                commands.entity(bullet).despawn();
+            }
         }
     }
 }

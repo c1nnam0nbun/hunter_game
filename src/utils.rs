@@ -8,19 +8,6 @@ pub fn limit(mut vec: Vec3, max: f32) -> Vec3 {
     return vec;
 }
 
-pub fn map(n: f32, start1: f32, stop1: f32, start2: f32, stop2: f32) -> f32 {
-    let new_val = (n - start1) / (stop1 - start1) * (stop2 - start2) + start2;
-    if start2 < stop2 {
-        return constrain(new_val, start2, stop2);
-    } else {
-        return constrain(new_val, stop2, start2);
-    }
-}
-
-fn constrain(n: f32, low: f32, high: f32) -> f32 {
-    f32::max(f32::min(n, high), low)
-}
-
 pub fn set_mag(vec: Vec3, n: f32) -> Vec3 {
     vec.normalize() * n
 }

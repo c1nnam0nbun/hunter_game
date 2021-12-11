@@ -2,7 +2,6 @@ use bevy::prelude::*;
 
 pub struct Threat;
 pub struct Prey;
-pub struct Fatal;
 
 pub(crate) struct MovementSpeed {
     pub value: f32,

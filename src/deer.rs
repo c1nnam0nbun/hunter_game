@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, fs::ReadDir};
+use std::{f32::consts::PI};
 
 use bevy::{
     math::{Quat, Vec3, Vec2},
@@ -13,8 +13,7 @@ use crate::{
     components::{Materials, MovementSpeed, Prey, Threat},
     hare::Hare,
     steering::{
-        evade, flee, pursue, wander, EvadeData, EvadeWallsData, FleeData, FlockingData, Physics,
-        PursueData, WanderData,
+        evade, flee, wander, EvadeData, EvadeWallsData, FleeData, FlockingData, Physics, WanderData,
     },
     utils::{dist, limit, line_line_intersection, set_mag},
     wolf::{Wolf, WolfData, WolfBehavior},
@@ -241,7 +240,7 @@ fn deer_cohesion(
         ),
         With<Deer>,
     >,
-    query_im: Query<(&Transform, &Physics, &GroupID), With<Deer>>,
+    query_im: Query<(&Transform, &GroupID), With<Deer>>,
     behavior_data: Res<DeerSteeringData>,
     settings: Res<DeerData>,
     deer_groups: Res<DeerGroups>,
@@ -255,7 +254,7 @@ fn deer_cohesion(
         let mut steer = Vec3::default();
         let mut total = 0.0;
 
-        for (other_transform, other_physics, other_id) in query_im.iter() {
+        for (other_transform, other_id) in query_im.iter() {
             if id.value == other_id.value && other_transform != transform {
                 if dist(transform.translation, other_transform.translation) < perception_radius {
                     steer += other_transform.translation;

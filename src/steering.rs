@@ -1,4 +1,4 @@
-use crate::utils::{limit, map, set_mag};
+use crate::utils::{limit, set_mag};
 use bevy::math::Vec3;
 
 pub(crate) struct Physics {
@@ -48,24 +48,6 @@ pub fn seek(position: Vec3, velocity: Vec3, target: Vec3, max_speed: f32) -> Vec
 
 pub fn flee(position: Vec3, velocity: Vec3, target: Vec3, max_speed: f32) -> Vec3 {
     let desired = set_mag(position - target, max_speed);
-
-    let mut steer = desired - velocity;
-    steer = limit(steer, max_speed);
-
-    steer
-}
-
-pub fn arrive(position: Vec3, velocity: Vec3, target: Vec3, max_speed: f32) -> Vec3 {
-    let mut desired = target - position;
-    let d = (desired.x * desired.x + desired.y * desired.y + desired.z * desired.z).sqrt();
-    desired.normalize();
-
-    if d < 100.0 {
-        let m = map(d, 0.0, 100.0, 0.0, max_speed);
-        desired *= m;
-    } else {
-        desired *= max_speed;
-    }
 
     let mut steer = desired - velocity;
     steer = limit(steer, max_speed);

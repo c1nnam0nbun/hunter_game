@@ -1,11 +1,10 @@
 use crate::{
     components::{Prey, Threat},
     steering::Physics,
-    utils::{dist, limit},
+    wolf::{Wolf, WolfBehavior, WolfData},
     FieldSize,
 };
 use bevy::{
-    input::mouse::MouseButtonInput,
     prelude::*,
     sprite::collide_aabb::{collide, Collision},
 };
@@ -30,6 +29,11 @@ pub struct BulletData {
     pub width: f32,
     pub height: f32,
     pub movement_speed: f32,
+    pub max_duration: f32,
+}
+
+pub struct BulletDuration {
+    pub shot_at: f32,
 }
 
 pub struct PlayerPlugin;
@@ -38,7 +42,7 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app.add_startup_stage(
             "game_setup_player",
-            SystemStage::single(player_spawn.system()),
+            SystemStage::single(player_spawn.system().label("player_spawn")),
         )
         .add_system(player_move.system().label("player_movement"))
         .add_system(player_rotate.system().label("player_rotation"))
@@ -53,6 +57,12 @@ impl Plugin for PlayerPlugin {
                 .system()
                 .label("bullet_fly")
                 .after("player_shoot"),
+        )
+        .add_system(
+            player_die
+                .system()
+                .label("player_die")
+                .after("player_spawn"),
         );
     }
 }
@@ -140,6 +150,8 @@ fn player_shoot(
     query: Query<&Transform, With<Player>>,
     mouse: Res<Input<MouseButton>>,
     materials: Res<Materials>,
+    bullet_data: Res<BulletData>,
+    time: Res<Time>,
 ) {
     if let Ok(transform) = query.single() {
         if mouse.just_released(MouseButton::Left) {
@@ -155,18 +167,56 @@ fn player_shoot(
                 })
                 .insert(Bullet)
                 .insert(Physics {
-                    velocity: transform.local_y() * 100.0 * TIME_STEP,
+                    velocity: transform.local_y() * bullet_data.movement_speed * TIME_STEP,
                     acceleration: Vec3::default(),
                     wander_theta: 0.0,
+                })
+                .insert(BulletDuration {
+                    shot_at: time.seconds_since_startup() as f32,
                 });
         }
     }
 }
 
 fn bullet_fly(
-    mut query: Query<(&mut Transform, &Physics), With<Bullet>>,
+    mut commands: Commands,
+    mut query: Query<(&mut Transform, &Physics, &BulletDuration, Entity), With<Bullet>>,
+    bullet_data: Res<BulletData>,
+    time: Res<Time>,
 ) {
-    for (mut transform, physics) in query.iter_mut() {
-        transform.translation += physics.velocity;
+    for (mut transform, physics, duration, bullet) in query.iter_mut() {
+        let now = time.seconds_since_startup();
+        println!("{}, {}", now, (duration.shot_at + bullet_data.max_duration));
+        if now < (duration.shot_at + bullet_data.max_duration).into() {
+            transform.translation += physics.velocity;
+        } else {
+            commands.entity(bullet).despawn();
+        }
+    }
+}
+
+fn player_die(
+    mut commands: Commands,
+    player_query: Query<(Entity, &Transform), With<Player>>,
+    mut wolf_query: Query<(&Transform, &mut WolfBehavior), With<Wolf>>,
+    player_data: Res<PlayerData>,
+    wolf_data: Res<WolfData>,
+    time: Res<Time>,
+) {
+    if let Ok((player, player_transform)) = player_query.single() {
+        for (wolf_transform, mut behavior) in wolf_query.iter_mut() {
+            if collide(
+                player_transform.translation,
+                Vec2::new(player_data.width, player_data.height),
+                wolf_transform.translation,
+                Vec2::new(wolf_data.width, wolf_data.height),
+            )
+            .is_some()
+            {
+                commands.entity(player).despawn();
+                behavior.hunger_time = time.seconds_since_startup() as f32;
+                break;
+            }
+        }
     }
 }

@@ -14,7 +14,6 @@ use player::BulletData;
 use serde_json::{from_str, Value};
 use std::fs;
 use steering::{EvadeData, EvadeWallsData, FleeData, FlockingData, PursueData, WanderData};
-use utils::map;
 use wolf::{WolfData, WolfPlugin, WolfSteeringData};
 
 use crate::components::{MainCamera, Materials, MousePosition};
@@ -126,7 +125,8 @@ fn setup(
     commands.insert_resource(BulletData {
         width: 24.0,
         height: 24.0,
-        movement_speed: 200.0,
+        movement_speed: settings["bullet"]["movement_speed"].as_f64().unwrap() as f32,
+        max_duration: settings["deer"]["max_duration"].as_f64().unwrap() as f32
     });
 
     commands

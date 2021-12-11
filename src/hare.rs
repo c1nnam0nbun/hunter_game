@@ -1,13 +1,13 @@
 use crate::{
-    components::{Fatal, MovementSpeed, Prey, Threat},
+    components::{MovementSpeed, Prey, Threat},
+    player::{Bullet, BulletData},
     steering::{flee, wander, EvadeWallsData, FleeData, Physics, WanderData},
     utils::{dist, limit, line_line_intersection},
     wolf::{Wolf, WolfBehavior, WolfData},
-    FieldSize, Materials, Walls, TIME_STEP, player::{Bullet, BulletData},
+    FieldSize, Materials, Walls, TIME_STEP,
 };
 use bevy::{
     app::{AppBuilder, Plugin},
-    core::FixedTimestep,
     prelude::*,
     sprite::collide_aabb::collide,
 };
@@ -139,7 +139,7 @@ fn hare_move(
         return;
     }
 
-    for (mut transform, mut physics, mut behavior, mut speed) in query.iter_mut() {
+    for (mut transform, mut physics, mut behavior, speed) in query.iter_mut() {
         physics.acceleration += behavior.force;
 
         let acc_clone = physics.acceleration.clone();
